@@ -3,7 +3,7 @@ object frmIndexCreator: TfrmIndexCreator
   Top = 0
   Caption = 'ViaThinkSoft Directory Hasher'
   ClientHeight = 611
-  ClientWidth = 877
+  ClientWidth = 884
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,19 +12,18 @@ object frmIndexCreator: TfrmIndexCreator
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
-  Position = poDefault
   Visible = True
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
-    877
+    884
     611)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
     Left = 24
     Top = 279
-    Width = 827
+    Width = 834
     Height = 13
     Anchors = [akLeft, akTop, akRight]
     AutoSize = False
@@ -155,7 +154,7 @@ object frmIndexCreator: TfrmIndexCreator
   object Memo1: TMemo
     Left = 584
     Top = 25
-    Width = 283
+    Width = 290
     Height = 193
     Anchors = [akLeft, akTop, akRight]
     ScrollBars = ssBoth
@@ -163,7 +162,7 @@ object frmIndexCreator: TfrmIndexCreator
     WordWrap = False
   end
   object Button4: TButton
-    Left = 778
+    Left = 785
     Top = 224
     Width = 89
     Height = 33
@@ -183,7 +182,7 @@ object frmIndexCreator: TfrmIndexCreator
   object Memo2: TMemo
     Left = 24
     Top = 440
-    Width = 843
+    Width = 850
     Height = 156
     Anchors = [akLeft, akTop, akRight, akBottom]
     Lines.Strings = (
@@ -193,7 +192,7 @@ object frmIndexCreator: TfrmIndexCreator
     WordWrap = False
   end
   object cbVerboseLogs: TCheckBox
-    Left = 772
+    Left = 779
     Top = 417
     Width = 97
     Height = 17

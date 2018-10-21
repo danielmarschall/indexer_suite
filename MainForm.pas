@@ -58,6 +58,7 @@ begin
     FTableName := ini.ReadString('IndexerSuite', 'TableName', 'files');
     Caption := Caption + Format(' [%s]', [FTableName]);
 
+    ADOConnection1.CommandTimeout := ini.ReadInteger('IndexerSuite', 'CommandTimeout', 5*60);
     ADOConnection1.ConnectionString := ini.ReadString('IndexerSuite', 'ConnectionString', '');
     if ADOConnection1.ConnectionString = '' then
     begin

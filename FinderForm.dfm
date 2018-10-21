@@ -28,7 +28,6 @@ object frmFinder: TfrmFinder
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    ExplicitWidth = 529
   end
   object Memo1: TMemo
     Left = 8
@@ -39,8 +38,6 @@ object frmFinder: TfrmFinder
     Lines.Strings = (
       'Results')
     TabOrder = 1
-    ExplicitWidth = 619
-    ExplicitHeight = 253
   end
   object Button1: TButton
     Left = 629
@@ -49,8 +46,8 @@ object frmFinder: TfrmFinder
     Height = 25
     Anchors = [akTop, akRight]
     Caption = 'Search'
+    Default = True
     TabOrder = 2
     OnClick = Button1Click
-    ExplicitLeft = 552
   end
 end

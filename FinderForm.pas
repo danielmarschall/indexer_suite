@@ -35,17 +35,21 @@ uses
 procedure TfrmFinder.Button1Click(Sender: TObject);
 var
   q: TADODataSet;
+  cntFound: integer;
 begin
   memo1.Lines.Clear;
   EnableDisableControls(false);
   try
+    cntFound := 0;
     q := conn.GetTable('select filename from '+TableName+' where filename like '+conn.SQLStringEscape('%'+edit1.Text+'%')+' order by filename');
     while not q.Eof do
     begin
       memo1.Lines.Add(q.Fields[0].AsString);
+      Inc(cntFound);
       if StopRequest then Abort;
       q.Next;
     end;
+    ShowMessageFmt('Done. Found %d files', [cntFound]);
   finally
     EnableDisableControls(true);
   end;

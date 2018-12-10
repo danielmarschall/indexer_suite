@@ -1,5 +1,7 @@
 unit RedundancyForm;
 
+// TODO: man soll einstellen können, dass er redundanzen nur innerhalb eines datenträgers (= root node) findet
+
 interface
 
 uses

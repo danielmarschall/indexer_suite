@@ -13,6 +13,7 @@ unit IndexCreatorForm;
 // TODO: Beim Lauf F:\nas\data wurden 1312 Fehler gefunden, aber nicht geloggt! ?! Eine exception im exception handler?!
 // => nochmal durchlaufen lassen
 // TODO: "Laufwerk" EHDD: soll man auch eingeben dürfen (das ist z.b. wichtig, wenn man Querverknüpfung vom Explorer verwendet)
+// TODO: validate modus auch ohne prüfsummencheck. nur gucken ob die dateien existieren
 
 {$DEFINE VIATHINKSOFT}
 

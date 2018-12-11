@@ -37,6 +37,7 @@ object frmFinder: TfrmFinder
     Anchors = [akLeft, akTop, akRight, akBottom]
     Lines.Strings = (
       'Results')
+    ScrollBars = ssBoth
     TabOrder = 1
   end
   object Button1: TButton

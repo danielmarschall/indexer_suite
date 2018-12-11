@@ -160,25 +160,6 @@ begin
   Result := SystemTimeToDateTime(systime);
 end;
 
-function UTCTimeToLocalTime(const aValue: TDateTime): TDateTime;
-var
-  lBias: Integer;
-  lTZI: TTimeZoneInformation;
-begin
-  lBias := 0;
-  case GetTimeZoneInformation(lTZI) of
-    TIME_ZONE_ID_UNKNOWN:
-      lBias := lTZI.Bias;
-    TIME_ZONE_ID_DAYLIGHT:
-      lBias := lTZI.Bias + lTZI.DaylightBias;
-    TIME_ZONE_ID_STANDARD:
-      lBias := lTZI.Bias + lTZI.StandardBias;
-  end;
-  // UTC = local time + bias
-  // bias is in number of minutes, TDateTime is in days
-  Result := aValue - (lBias / (24 * 60));
-end;
-
 function GetFileSize(const AFileName: String): int64;
 var
   lFindData: TWin32FindData;
@@ -266,6 +247,18 @@ begin
 {$ENDIF}
 end;
 
+function SpecialCompare(a, b: TDateTime): boolean; // true = same timestamp
+begin
+  if SecondsBetween(a,b) < 2 then exit(true); // equal
+
+  if SecondsBetween(a,b) > 7200 then exit(false);
+
+  // Minute and Second equal, and difference is < 2h: fair enough, seems to be a DST issue
+  if copy(TimeToStr(a),4,5) = copy(TimeToStr(b),4,5) then exit(true);
+
+  result := false;
+end;
+
 procedure TfrmIndexCreator.CheckFile(const originalFileName,
   uniqueFilename: string);
 
@@ -296,10 +289,8 @@ var
         Result := erDoesNotExist
       else if not q.Fields[0].IsNull then
         Result := erHadError
-      else if (q.Fields[1].AsString <> IntToStr(size)) or
-      // we are combining strings because of int64
-        (SecondsBetween(q.Fields[2].AsDateTime, UTCTimeToLocalTime(modified)
-        ) > 2) then
+      else if (q.Fields[1].AsString <> IntToStr(size)) or // we are combining strings because of int64
+        not SpecialCompare(q.Fields[2].AsDateTime, modified) then
       begin
         Result := erChanged
       end
@@ -342,8 +333,8 @@ begin
         conn.ExecSQL('INSERT INTO ' + TableName +
           ' (filename, size, created, modified, md5hash, error) values (' +
           conn.SQLStringEscape(VtsSpecial(uniqueFilename)) + ', ' +
-          IntToStr(size) + ', ' + DateTimeToSQL(UTCTimeToLocalTime(created)) +
-          ', ' + DateTimeToSQL(UTCTimeToLocalTime(modified)) + ', ' +
+          IntToStr(size) + ', ' + DateTimeToSQL(created) +
+          ', ' + DateTimeToSQL(modified) + ', ' +
           conn.SQLStringEscape(LowerCase(md5)) + ', NULL);');
       end;
       if cbVerboseLogs.Checked then
@@ -364,8 +355,8 @@ begin
                 ' (filename, size, created, modified, md5hash, error) values ('
                 + conn.SQLStringEscape(VtsSpecial(uniqueFilename)) + ', ' +
                 IntToStr(size) + ', ' +
-                DateTimeToSQL(UTCTimeToLocalTime(created)) + ', ' +
-                DateTimeToSQL(UTCTimeToLocalTime(modified)) + ', ' +
+                DateTimeToSQL(created) + ', ' +
+                DateTimeToSQL(modified) + ', ' +
                 conn.SQLStringEscape(LowerCase(md5)) + ', NULL);');
             end;
             if cbVerboseLogs.Checked then
@@ -381,8 +372,8 @@ begin
             begin
               conn.ExecSQL('UPDATE ' + TableName + ' SET size = ' +
                 IntToStr(size) + ', created = ' +
-                DateTimeToSQL(UTCTimeToLocalTime(created)) + ', modified = ' +
-                DateTimeToSQL(UTCTimeToLocalTime(modified)) + ', md5hash = ' +
+                DateTimeToSQL(created) + ', modified = ' +
+                DateTimeToSQL(modified) + ', md5hash = ' +
                 conn.SQLStringEscape(LowerCase(md5)) +
                 ', error = NULL WHERE filename = ' + conn.SQLStringEscape
                 (VtsSpecial(uniqueFilename)) + ';');
@@ -393,6 +384,15 @@ begin
           end;
         erUnchanged: // Date/Time+Size has not changed
           begin
+            {$REGION 'Update it to correct wrong UTC/DST datasets...'}
+            conn.ExecSQL('UPDATE ' + TableName + ' SET size = ' +
+              IntToStr(size) + ', created = ' +
+              DateTimeToSQL(created) + ', modified = ' +
+              DateTimeToSQL(modified) +
+              ', error = NULL WHERE filename = ' + conn.SQLStringEscape
+              (VtsSpecial(uniqueFilename)) + ';');
+            {$ENDREGION}
+
             if rgModus.ItemIndex = modusValidation then
             begin
               md5 := MD5File(uniqueFilename);
@@ -754,12 +754,15 @@ begin
       end;
     *)
   finally
-    EnableDisableControls(true);
+    if not StopRequest then EnableDisableControls(true);
   end;
 
-  Beep;
-  Label1.Caption := 'Done.';
-  Application.ProcessMessages;
+  if not StopRequest then
+  begin
+    Beep;
+    Label1.Caption := 'Done.';
+    Application.ProcessMessages;
+  end;
 end;
 
 procedure TfrmIndexCreator.FormClose(Sender: TObject; var Action: TCloseAction);

@@ -644,7 +644,7 @@ var
 {$IFDEF VIATHINKSOFT}
     if StartsText('EHDD:\', AFileName) then
     begin
-      // Attention: AllowFileCheck must be called to initialize cacheAconnected and cacheBconnected
+      // Attention: AllowFileCheck must be called to initialize cacheAconnected and cacheBconnected and cacheRconnected
 
       if cacheAconnected and FileExists(StringReplace(AFileName, 'EHDD:\',
         GUID_EHDD_A, [])) then
@@ -654,7 +654,7 @@ var
         GUID_EHDD_B, [])) then
         exit(true);
 
-      if cacheBconnected and FileExists(StringReplace(AFileName, 'EHDD:\',
+      if cacheRconnected and FileExists(StringReplace(AFileName, 'EHDD:\',
         GUID_EHDD_R, [])) then
         exit(true);
 

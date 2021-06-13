@@ -3,7 +3,7 @@ unit AdoConnHelper;
 (*
  * Class helper for TAdoConnection
  * by Daniel Marschall, ViaThinkSoft <www.viathinksoft.com>
- * Revision: 28 Aug 2018
+ * Revision: 14 June 2021
  *)
 
 interface
@@ -91,7 +91,10 @@ begin
   result.CommandType := cmdText;
   result.CommandText := SQL;
   result.DisableControls;
-  if ATimeout <> -1 then result.CommandTimeout := ATimeout;
+  if ATimeout <> -1 then
+    result.CommandTimeout := ATimeout
+  else
+    result.CommandTimeout := self.CommandTimeout;
   result.Active := true;
 end;
 
@@ -176,7 +179,10 @@ begin
     cmd.ParamCheck := false;
     cmd.CommandType := cmdText;
     cmd.CommandText := SQL;
-    if ATimeOut <> -1 then cmd.CommandTimeout := ATimeout;
+    if ATimeOut <> -1 then
+      cmd.CommandTimeout := ATimeout
+    else
+      cmd.CommandTimeout := self.CommandTimeout;
     cmd.Execute;
   finally
     cmd.Free;
@@ -189,7 +195,7 @@ var
 begin
   for s in List do
   begin
-    ExecSQL(s);
+    ExecSQL(s, ATimeout);
   end;
 end;
 

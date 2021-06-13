@@ -111,8 +111,11 @@ function GetVolumeNameForVolumeMountPoint(lpszVolumeMountPoint: PChar;
 const
   ERROR_FIELD_SIZE = 200;
 {$IFDEF VIATHINKSOFT}
+  // Example of multiple drives merging to one Index
+  // Find out via "mountvol" command
   GUID_EHDD_A = '\\?\Volume{31e044b1-28dc-11e6-9bae-d067e54bf736}\';
   GUID_EHDD_B = '\\?\Volume{560e8251-2b6a-4ab7-82fc-d03df4d93538}\';
+  GUID_EHDD_R = '\\?\Volume{9d53ea3c-175c-4a8f-a7b4-7b9e6b765e58}\';
 {$ENDIF}
 
 function MD5File(const filename: string): string;
@@ -244,6 +247,7 @@ begin
 {$IFDEF VIATHINKSOFT}
   Result := StringReplace(Result, GUID_EHDD_A, 'EHDD:\', []);
   Result := StringReplace(Result, GUID_EHDD_B, 'EHDD:\', []);
+  Result := StringReplace(Result, GUID_EHDD_R, 'EHDD:\', []);
 {$ENDIF}
 end;
 
@@ -590,6 +594,7 @@ procedure TfrmIndexCreator.DeleteVanishedFiles(mask: string = '');
 var
   cacheAconnected: boolean;
   cacheBconnected: boolean;
+  cacheRconnected: boolean;
 {$ENDIF}
   function AllowFileCheck(AFileName: string): boolean;
   var
@@ -607,7 +612,11 @@ var
       begin
         cacheBconnected := true;
       end;
-      Result := cacheAconnected or cacheBconnected;
+      if not cacheRconnected and SysUtils.DirectoryExists(GUID_EHDD_R) then
+      begin
+        cacheRconnected := true;
+      end;
+      Result := cacheAconnected or cacheBconnected or cacheRconnected;
     end
     else
 {$ENDIF}
@@ -643,6 +652,10 @@ var
 
       if cacheBconnected and FileExists(StringReplace(AFileName, 'EHDD:\',
         GUID_EHDD_B, [])) then
+        exit(true);
+
+      if cacheBconnected and FileExists(StringReplace(AFileName, 'EHDD:\',
+        GUID_EHDD_R, [])) then
         exit(true);
 
       exit(false);

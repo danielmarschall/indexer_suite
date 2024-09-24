@@ -255,10 +255,10 @@ begin
 end;
 
 procedure TfrmExplorer.FormShow(Sender: TObject);
-var
-  ini: TMemIniFile;
+//var
+//  ini: TMemIniFile;
 begin
-  ini := frmMain.ini;
+  //ini := frmMain.ini;
   // Edit1.Text := ini.ReadString('Explorer', 'DefaultDir', '');
 end;
 
